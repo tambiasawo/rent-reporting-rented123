@@ -1,5 +1,5 @@
 "use client";
-
+import React from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,9 +26,17 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { toast } from "sonner";
+import { UserRentInfoContext } from "@/lib/context/UserRentInfoContextProvider";
 
 export default function RentPaymentForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const {
+    userRentInfo: { mepr_monthly_rent },
+  } = UserRentInfoContext();
+
+  const [customerRentData, setCustomerRentData] = useState({
+    rent: parseFloat(mepr_monthly_rent),
+  });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -39,9 +47,13 @@ export default function RentPaymentForm() {
       rentAmount: undefined,
       addressChanged: false,
       newAddress: null,
-      paymentDate: new Date(),
+      paymentDate: undefined,
     },
   });
+
+  React.useEffect(() => {
+    setCustomerRentData({ rent: parseFloat(mepr_monthly_rent) });
+  }, [mepr_monthly_rent]);
 
   async function onSubmit(data: FormValues) {
     try {
@@ -147,7 +159,7 @@ export default function RentPaymentForm() {
           name="rentAmount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Rent Amount</FormLabel>
+              <FormLabel>Rent Amount ($)</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -155,12 +167,11 @@ export default function RentPaymentForm() {
                   step="0.01"
                   placeholder="Enter rent amount"
                   {...field}
-                  value={field.value || ""}
+                  value={field.value || customerRentData.rent || 0}
                   onChange={(e) => {
                     const value =
-                      e.target.value === ""
-                        ? undefined
-                        : Math.max(0, parseFloat(e.target.value) || 0);
+                      e.target.value &&
+                      Math.max(0, parseFloat(e.target.value) || 0);
                     field.onChange(value);
                   }}
                   className={cn(
