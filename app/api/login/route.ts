@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     // 3) Handle non-OK response
     if (!response.ok) {
       const errorBody = await response.json();
-      console.log({ errorBody });
+
       return NextResponse.json(
         {
           message:
@@ -36,7 +36,6 @@ export async function POST(req: Request) {
 
     // 4) Parse the successful JSON and return it
     const result = await response.json();
-    console.log({ result });
 
     const res = NextResponse.json({
       success: true,
@@ -50,7 +49,7 @@ export async function POST(req: Request) {
       path: "/",
       maxAge: 60 * 60 * 24, // 1 day
     });
-    
+
     return res;
   } catch (err) {
     console.error("Could not fetch user", err);
