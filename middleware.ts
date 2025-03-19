@@ -2,11 +2,17 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(req: NextRequest) {
-  const { pathname, searchParams } = req.nextUrl;
+  const { pathname } = req.nextUrl;
+  const token = req.cookies.get("myapp-token")?.value;
 
   // Allow certain routes unconditionally:
+  if (pathname.startsWith("/login")) {
+    return token
+      ? NextResponse.redirect(new URL("/", req.url))
+      : NextResponse.next();
+  }
   if (
-    pathname.startsWith("/login") ||
+    //pathname.startsWith("/login") ||
     pathname.startsWith("/api") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/static")
@@ -15,7 +21,6 @@ export function middleware(req: NextRequest) {
   }
 
   // Check for token
-  const token = req.cookies.get("myapp-token")?.value;
   if (!token) {
     // Build a /login?from={originalPath} URL
     const loginUrl = req.nextUrl.clone();
