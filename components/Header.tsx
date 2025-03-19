@@ -1,17 +1,21 @@
 import React from "react";
-import Image from "next/image";
+import { UserNav } from "./UserNav";
 
-const Header = () => {
+const Header = ({ isSignedIn }: { isSignedIn: boolean }) => {
+  
   return (
-    <div className="mb-2 py-3 ">
-      <Image
-        className="mx-auto"
-        src="https://rented123-brand-files.s3.us-west-2.amazonaws.com/logo_white.svg"
-        alt="Rented123"
-        width={"80"}
-        height={"80"}
-      />
-    </div>
+    <header className="border-b ">
+      <div className="flex justify-between items-center px-4 h-16 ">
+        <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">
+          Rented123
+        </h1>
+        {isSignedIn && (
+          <div className="container mx-auto flex items-center justify-end">
+            <UserNav />
+          </div>
+        )}
+      </div>
+    </header>
   );
 };
 

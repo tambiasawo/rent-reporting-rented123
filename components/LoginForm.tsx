@@ -17,12 +17,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-
 import { toast } from "sonner";
 import Link from "next/link";
 
-export default function RentPaymentForm() {
-  const [isLoading, setIsLoading] = useState(false);
+export default function RentPaymentForm({
+  onSubmit,
+  isLoading,
+  error,
+}: {
+  onSubmit: (data: LoginFormValues) => Promise<void>;
+  isLoading: boolean;
+  error: string;
+}) {
   const [showPassword, setShowPassword] = useState(false);
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(LoginFormSchema),
@@ -32,37 +38,9 @@ export default function RentPaymentForm() {
     },
   });
 
-  async function onSubmit(data: LoginFormValues) {
-    try {
-      setIsLoading(true);
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to submit form");
-      }
-      const userData = await response.json();
-      console.log({ userData });
-      window.location.href = "/";
-    } catch (error) {
-      toast.error("Failed to submit form");
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-6 w-full md:w-1/2"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full">
         <div className="mb-3">
           <h1 className="text-center text-2xl md:text-3xl font-semibold text-gray-900 pb-1 md:pb-2">
             Login
@@ -124,27 +102,30 @@ export default function RentPaymentForm() {
             </FormItem>
           )}
         />
-
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Submitting..." : "Submit"}
-        </Button>
-        <div className="flex justify-between">
-          <p className="underline">
-            <Link
-              href={"https://rented123.com/login/?action=forgot_password"}
-              target="_blank"
-            >
-              Forgot Password?
-            </Link>
-          </p>
-          <p className="underline">
-            {" "}
-            <Link href={"https://rented123.com/sign-up/silver"} target="_blank">
-              Sign Up
-            </Link>
+        <div>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Signing in..." : "Sign In"}
+          </Button>
+          <p className="text-center text-red-500 text-sm pt-1">
+            {error ? "Invalid username or password" : ""}
           </p>
         </div>
       </form>
+      <div className="flex justify-between text-sm pt-1">
+        <p className="underline">
+          <Link
+            href={"https://rented123.com/login/?action=forgot_password"}
+            target="_blank"
+          >
+            Forgot Password?
+          </Link>
+        </p>
+        <p className="underline">
+          <Link href={"https://rented123.com/sign-up/silver"} target="_blank">
+            Sign Up
+          </Link>
+        </p>
+      </div>
     </Form>
   );
 }
