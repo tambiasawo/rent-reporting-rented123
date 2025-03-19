@@ -1,11 +1,62 @@
+"use client";
+import { useId, useState } from "react";
 import LoginForm from "@/components/LoginForm";
+import { AuthContext } from "@/lib/context/AuthContextProvider";
+import { LoginFormValues } from "@/lib/validations/form";
+import { UserRentInfoContext } from "@/lib/context/UserRentInfoContextProvider";
 
 export default function Login() {
+  const userId = useId();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const { storeUserData } = AuthContext();
+  const { storeUserRentInfo } = UserRentInfoContext();
+
+  
+  async function submitHandler(data: LoginFormValues) {
+    try {
+      setIsLoading(true);
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error("Invalid username or password");
+      }
+      const { user_data, user_metadata } = await response.json();
+      storeUserData({
+        id: userId,
+        email: user_data.user_email,
+        name: user_data.display_name,
+      });
+      storeUserRentInfo(user_metadata);
+      console.log({ user_metadata });
+      window.location.href = "/";
+    } catch (error: unknown) {
+      setError(error as string);
+      //toast.error(error as string);
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
-    <main className="container mx-auto px-4 py-8 pt-4">
-      <div className="md:max-w-5xl mx-auto flex h-[400px] gap-7 flex-col md:flex-row items-center rounded-md md:border mt-5 pl-5 md:pl-0 pr-5">
-        <div className="w-1/2 hidden md:block h-full signIn-left rounded-tl-md rounded-bl-md" />
-        <LoginForm />
+    <main className="container mx-auto px-4 py-8 mt-8">
+      <div className="md:max-w-5xl mx-auto flex h-[400px] gap-7 flex-col md:flex-row items-center md:border rounded-md mt-5 pl-5 md:pl-0 pr-5 md:pr-0">
+        <div className="w-[35%] hidden md:block h-full signIn-left rounded-tl-md rounded-bl-md" />
+        <div className="md:w-[60%] w-full">
+          <LoginForm
+            onSubmit={submitHandler}
+            isLoading={isLoading}
+            error={error}
+          />
+        </div>
       </div>
     </main>
   );
