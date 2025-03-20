@@ -80,7 +80,7 @@
     @apply bg-background text-foreground;
   }
   .signIn-left {
-    background-image: url("/rent-reporting-2.jpeg");
+    background-image: url("/rent-reporting.jpeg");
     background-size: cover;
     background-repeat: no-repeat;
     width: 100%;
