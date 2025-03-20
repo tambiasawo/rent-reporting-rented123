@@ -7,14 +7,14 @@ export async function POST(req: Request) {
   try {
     // 2) Fetch your WordPress endpoint
     const response = await fetch(
-      `https://rented123.com/wp-json/authenticate/v1/check-user`,
+      `${process.env.WORDPRESS_BASE_API}/authenticate/v1/check-user`,
       {
         method: "POST",
         headers: {
           // Make sure WP sees it as JSON
           Accept: "application/json",
           "Content-Type": "application/json",
-          "X-Requested-By": "rent_report-rented123_next_iokre39k",
+          "X-Requested-By": process.env.SECRET_HEADER as string,
         },
         // Must stringify the JSON when sending in fetch
         body: JSON.stringify(formData),

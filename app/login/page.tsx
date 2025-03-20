@@ -22,7 +22,7 @@ export default function Login() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Requested-By": "rent_report-rented123_next_iokre39k",
+          "X-Requested-By": process.env.NEXT_PUBLIC_SECRET_HEADER as string,
         },
         body: JSON.stringify(data),
       });
@@ -37,11 +37,9 @@ export default function Login() {
         name: user_data.display_name,
       });
       storeUserRentInfo(user_metadata);
-      console.log({ user_metadata });
       window.location.href = "/";
     } catch (error: unknown) {
       setError(error as string);
-      //toast.error(error as string);
       console.error(error);
     } finally {
       setIsLoading(false);
