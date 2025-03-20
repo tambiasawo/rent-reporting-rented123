@@ -39,8 +39,8 @@ export const formSchema = z.object({
 });
 
 export const LoginFormSchema = z.object({
-  username: z.string(),
-  password: z.string(),
+  username: z.string().min(2, "Username is required"),
+  password: z.string().min(1, "Password is required"),
 });
 
 export type FormValues = z.infer<typeof formSchema>;
