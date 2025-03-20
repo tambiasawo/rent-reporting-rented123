@@ -22,7 +22,6 @@ export default function Login() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Requested-By": process.env.NEXT_PUBLIC_SECRET_HEADER as string,
         },
         body: JSON.stringify(data),
       });
