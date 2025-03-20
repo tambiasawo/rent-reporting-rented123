@@ -7,7 +7,7 @@ export async function POST(req: Request) {
   try {
     // 2) Fetch your WordPress endpoint
     const response = await fetch(
-      `${process.env.WORDPRESS_BASE_API}/authenticate/v1/check-user`,
+      `https://rented123.com/wp-json/authenticate/v1/check-user`,
       {
         method: "POST",
         headers: {
