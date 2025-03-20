@@ -14,7 +14,7 @@ export async function POST(req: Request) {
           // Make sure WP sees it as JSON
           Accept: "application/json",
           "Content-Type": "application/json",
-          "X-Requested-By": process.env.SECRET_HEADER as string,
+          "X-Requested-By": "rent_report-rented123_next_iokre39k", // process.env.SECRET_HEADER as string,
         },
         // Must stringify the JSON when sending in fetch
         body: JSON.stringify(formData),
