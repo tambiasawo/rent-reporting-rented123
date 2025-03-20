@@ -22,6 +22,7 @@ export default function Login() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "X-Requested-By": "rent_report-rented123_next_iokre39k",
         },
         body: JSON.stringify(data),
       });

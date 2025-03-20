@@ -14,6 +14,7 @@ export async function POST(req: Request) {
           // Make sure WP sees it as JSON
           Accept: "application/json",
           "Content-Type": "application/json",
+          "X-Requested-By": "rent_report-rented123_next_iokre39k",
         },
         // Must stringify the JSON when sending in fetch
         body: JSON.stringify(formData),
@@ -23,7 +24,7 @@ export async function POST(req: Request) {
     // 3) Handle non-OK response
     if (!response.ok) {
       const errorBody = await response.json();
-
+      console.log({ errorBody });
       return NextResponse.json(
         {
           message:
