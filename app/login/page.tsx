@@ -1,5 +1,7 @@
 "use client";
 import { useId, useState } from "react";
+import Image from "next/image";
+
 import LoginForm from "@/components/LoginForm";
 import { AuthContext } from "@/lib/context/AuthContextProvider";
 import { LoginFormValues } from "@/lib/validations/form";
@@ -13,7 +15,6 @@ export default function Login() {
   const { storeUserData } = AuthContext();
   const { storeUserRentInfo } = UserRentInfoContext();
 
-  
   async function submitHandler(data: LoginFormValues) {
     try {
       setIsLoading(true);
@@ -47,7 +48,16 @@ export default function Login() {
   }
 
   return (
-    <main className="container mx-auto px-4 py-8 mt-8">
+    <main className="container mx-auto px-4 py-4">
+      <div className="mb-10">
+        <Image
+          className="mx-auto"
+          src="https://rented123-brand-files.s3.us-west-2.amazonaws.com/logo_white.svg"
+          alt="Rented123"
+          width={"80"}
+          height={"80"}
+        />
+      </div>
       <div className="md:max-w-5xl mx-auto flex h-[400px] gap-7 flex-col md:flex-row items-center md:border rounded-md mt-5 pl-5 md:pl-0 pr-5 md:pr-0">
         <div className="w-[35%] hidden md:block h-full signIn-left rounded-tl-md rounded-bl-md" />
         <div className="md:w-[60%] w-full">
