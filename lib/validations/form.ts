@@ -7,7 +7,7 @@ const zipCodeRegex = /^\d{5}(-\d{4})?$/;
 
 export const formSchema = z.object({
   sin: z.string().regex(sinRegex, "SIN must be exactly 9 digits"),
-  referenceNumber: z
+  confirmationNumber: z
     .string()
     .min(1, "Reference number is required")
     .max(8, "Reference number must not exceed 8 characters"),

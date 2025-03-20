@@ -42,7 +42,7 @@ export default function RentPaymentForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       sin: "",
-      referenceNumber: "",
+      confirmationNumber: "",
       phoneNumber: "",
       rentAmount: undefined,
       addressChanged: false,
@@ -113,17 +113,17 @@ export default function RentPaymentForm() {
 
         <FormField
           control={form.control}
-          name="referenceNumber"
+          name="confirmationNumber"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Reference Number</FormLabel>
+              <FormLabel>Payment Confirmation Number</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter reference number"
+                  placeholder="Enter confirmation number"
                   {...field}
                   maxLength={8}
                   className={cn(
-                    form.formState.errors.referenceNumber &&
+                    form.formState.errors.confirmationNumber &&
                       "border-red-500 focus-visible:ring-red-500"
                   )}
                 />
