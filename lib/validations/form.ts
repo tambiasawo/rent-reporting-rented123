@@ -6,13 +6,35 @@ const postalCodeRegex = /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/;
 const zipCodeRegex = /^\d{5}(-\d{4})?$/;
 
 export const formSchema = z.object({
-  sin: z.string().regex(sinRegex, "SIN must be exactly 9 digits"),
+  sin: z
+    .string()
+    .regex(sinRegex, "SIN must be exactly 9 digits")
+    .refine((val) => {
+      // Basic Luhn algorithm check for SIN validation
+      const digits = val.split("").map(Number);
+      let sum = 0;
+      let isEven = false;
+
+      for (let i = digits.length - 1; i >= 0; i--) {
+        let digit = digits[i];
+
+        if (isEven) {
+          digit *= 2;
+          if (digit > 9) digit -= 9;
+        }
+
+        sum += digit;
+        isEven = !isEven;
+      }
+
+      return sum % 10 === 0;
+    }, "Invalid SIN number"),
   confirmationNumber: z
     .string()
     .min(1, "Reference number is required")
-    .max(8, "Reference number must not exceed 8 characters"),
+    .max(32, "Reference number must not exceed 32 characters"),
   phoneNumber: z.string().regex(phoneRegex, "Invalid phone number format"),
-  rentAmount: z.number().min(0, "Rent amount must be positive").optional(),
+  rentAmount: z.number().min(1, "Rent amount must be positive"),
   addressChanged: z.boolean(),
   newAddress: z
     .object({
