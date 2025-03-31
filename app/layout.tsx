@@ -3,8 +3,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
-import { AuthContextProvider } from "@/lib/context/AuthContextProvider";
 import ContextWrapper from "@/lib/context";
+import { Toaster } from 'sonner';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +28,7 @@ export default async function RootLayout({
           <Header isSignedIn={Boolean(loggedInCookie)} />
           {children}
         </ContextWrapper>
+        <Toaster richColors position="top-center" />
       </body>
     </html>
   );
