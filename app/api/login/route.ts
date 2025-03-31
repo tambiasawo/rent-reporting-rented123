@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   // 1) Parse JSON from the incoming request
   const formData = await req.json();
-
   try {
     // 2) Fetch your WordPress endpoint
     const response = await fetch(
@@ -24,7 +23,6 @@ export async function POST(req: Request) {
     // 3) Handle non-OK response
     if (!response.ok) {
       const errorBody = await response.json();
-      console.log({ errorBody });
       return NextResponse.json(
         {
           message:
@@ -37,14 +35,13 @@ export async function POST(req: Request) {
 
     // 4) Parse the successful JSON and return it
     const result = await response.json();
-
     const res = NextResponse.json({
       success: true,
       user_data: result.user,
       user_metadata: result.usermeta,
     });
 
-    res.cookies.set("myapp-token", "some-session-token", {
+    res.cookies.set("myapp-token", "user-session-token", {
       httpOnly: true,
       secure: true,
       path: "/",
