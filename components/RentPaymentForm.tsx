@@ -7,11 +7,12 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formSchema, type FormValues } from "@/lib/validations/form";
-
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,13 +26,23 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { toast } from "sonner";
 import { UserRentInfoContext } from "@/lib/context/UserRentInfoContextProvider";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+} from "./ui/select";
+import Link from "next/link";
 
 export default function RentPaymentForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isSubscriptionActive, setIsSubscriptionActive] = useState(false);
+
   const {
-    userRentInfo: { mepr_monthly_rent },
+    userRentInfo: { mepr_monthly_rent, id, ...rest },
   } = UserRentInfoContext();
 
   const [customerRentData, setCustomerRentData] = useState({
@@ -51,26 +62,110 @@ export default function RentPaymentForm() {
     },
   });
 
+  async function checkUserSubscription(id: number) {
+    if (id) {
+      try {
+        const response = await fetch(`/api/check-subscription/?user_id=${id}`);
+        const data = await response.json();
+        if (data.success) setIsSubscriptionActive(true);
+      } catch (e) {
+        console.log("an error occurred");
+      }
+    }
+  }
   React.useEffect(() => {
+    checkUserSubscription(id);
     setCustomerRentData({ rent: parseFloat(mepr_monthly_rent) });
-  }, [mepr_monthly_rent]);
+  }, [id]);
 
   async function onSubmit(data: FormValues) {
+    if (!isSubscriptionActive) {
+      toast.error("Active subscription required to submit rent payments");
+      return;
+    }
     try {
       setIsLoading(true);
-      const response = await fetch("/api/submit-form", {
+      let [
+        first_address,
+        second_address,
+        city,
+        provinceState,
+        postalZipCode,
+        countryCode,
+      ] = [
+        rest["mepr-address-one"],
+        rest["mepr-address-two"],
+        rest["mepr-address-city"],
+        rest["mepr-address-state"],
+        rest["mepr-address-zip"],
+        rest["mepr-address-country"],
+      ];
+      if (data.addressChanged && data.newAddress) {
+        first_address = data.newAddress.address1;
+        second_address = data.newAddress.address2;
+        city = data.newAddress.city;
+        provinceState = data.newAddress.provinceState;
+        postalZipCode = data.newAddress.postalZipCode;
+        countryCode = data.newAddress.countryCode;
+      }
+      const paymentDate = format(data.paymentDate, "MMddyyyy");
+      const currentDate = format(new Date(), "MMddyyyy");
+      const metro2Data = {
+        //...data,
+        "Account Number": rest.account_number,
+        "Portfolio Type": "O",
+        "Account Type": 29,
+        "Date Opened": "27th of the last month",
+        "Credit Limit": "",
+        "Highest Credit": data.rentAmount,
+        "Terms Duration": "001",
+        "Terms Frequency": "M",
+        "Scheduled Monthly Payment Amount": mepr_monthly_rent,
+        "Actual Payment Amount": data.rentAmount,
+        "Account Status": "11",
+        "Payment Rating": "",
+        "Payment History Profile": "BBBBBBBBBBBBBBBBBBBBBBBB",
+        "Special Comment": "",
+        "Compliance Condition Code": "",
+        "Current Balance": Math.floor(mepr_monthly_rent - data.rentAmount),
+        "Amount Past Due": "000000000",
+        "Original Charge-Off Amount": "",
+        "Date of Account Information": currentDate, //chech this
+        "Date of First Delinquency": "",
+        "Date Closed": "",
+        "Date of Last Payment": "shoudld be the 5th of last month",
+        "Interest Type Indicator": "",
+        Surname: rest.last_name,
+        "First Name": rest.first_name,
+        "Middle Name": "",
+        "Generation Code": "",
+        "Social Security Number": data.sin,
+        "Date of Birth": rest.mepr_date_of_birth,
+        "Telephone Number": data.phoneNumber,
+        "ECOA Code": "1",
+        "Consumer Information Indicator": "",
+        "Country Code": countryCode === "CA" ? "CN" : "US",
+        "First Line of Address": first_address,
+        "Second Line of Address": second_address,
+        City: city,
+        "State / Province Code": provinceState,
+        "Zip Code": postalZipCode,
+        "Address Indicator": "",
+        "Residence Code": "",
+      };
+      const response = await fetch("/api/sub mit-form", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(metro2Data),
       });
 
       if (!response.ok) {
         throw new Error("Failed to submit form");
       }
 
-      toast.success("Form submitted successfully");
+      toast.success("Form submitted successfully. You can now log out");
       form.reset();
     } catch (error) {
       toast.error("Failed to submit form");
@@ -79,6 +174,25 @@ export default function RentPaymentForm() {
       setIsLoading(false);
     }
   }
+
+  /*  if (!isSubscriptionActive) {
+    return (
+      <div className="text-center p-8">
+        <h2 className="text-xl font-semibold text-red-600 mb-2">
+          Subscription Required
+        </h2>
+        <p className="text-gray-600">
+          An active subscription is required to report rent payments. Please
+          subscribe to continue.
+        </p>
+        <Button className="mt-3">
+          <Link href="https://rented123.com/login" target="_blank">
+            Verify your Subscription
+          </Link>
+        </Button>
+      </div>
+    );
+  } */
 
   return (
     <Form {...form}>
@@ -106,6 +220,10 @@ export default function RentPaymentForm() {
                   )}
                 />
               </FormControl>
+              <FormDescription>
+                Your SIN is required for credit reporting and is securely
+                transmitted
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -121,13 +239,16 @@ export default function RentPaymentForm() {
                 <Input
                   placeholder="Enter confirmation number"
                   {...field}
-                  maxLength={8}
+                  maxLength={32}
                   className={cn(
                     form.formState.errors.confirmationNumber &&
                       "border-red-500 focus-visible:ring-red-500"
                   )}
                 />
               </FormControl>
+              <FormDescription>
+                Enter the confirmation number from your online rent payment
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -205,7 +326,7 @@ export default function RentPaymentForm() {
                         city: "",
                         provinceState: "",
                         postalZipCode: "",
-                        countryCode: "",
+                        countryCode: "CN",
                       });
                     }
                   }}
@@ -344,15 +465,28 @@ export default function RentPaymentForm() {
                   <FormItem>
                     <FormLabel>Country Code</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="e.g., CA, US"
-                        {...field}
-                        maxLength={2}
-                        className={cn(
-                          form.formState.errors.newAddress?.countryCode &&
-                            "border-red-500 focus-visible:ring-red-500"
-                        )}
-                      />
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        defaultValue="CN"
+                      >
+                        <SelectTrigger
+                          className={cn(
+                            "w-full",
+                            form.formState.errors.newAddress?.countryCode &&
+                              "border-red-500 focus-visible:ring-red-500"
+                          )}
+                        >
+                          {field.value !== "CN" ? "USA" : "Canada"}
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Country</SelectLabel>
+                            <SelectItem value="CN">Canada</SelectItem>
+                            <SelectItem value="US">USA</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
