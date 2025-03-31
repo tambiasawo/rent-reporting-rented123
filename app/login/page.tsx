@@ -31,11 +31,10 @@ export default function Login() {
       }
       const { user_data, user_metadata } = await response.json();
       storeUserData({
-        id: userId,
         email: user_data.user_email,
         name: user_data.display_name,
       });
-      storeUserRentInfo(user_metadata);
+      storeUserRentInfo({ ...user_metadata, id: user_data.ID });
       window.location.href = "/";
     } catch (error: unknown) {
       setError(error as string);
