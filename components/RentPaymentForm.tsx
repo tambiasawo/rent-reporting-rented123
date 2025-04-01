@@ -62,7 +62,6 @@ export default function RentPaymentForm() {
       paymentDate: undefined,
     },
   });
-
   async function checkUserSubscription(id: number) {
     setIsCheckingSubscription(true);
     if (id) {
@@ -114,6 +113,8 @@ export default function RentPaymentForm() {
       }
       const paymentDate = format(data.paymentDate, "MMddyyyy");
       const currentDate = format(new Date(), "MMddyyyy");
+      console.log({ countryCode });
+
       const metro2Data = {
         //...data,
         "Account Number": rest.account_number,
@@ -137,7 +138,7 @@ export default function RentPaymentForm() {
         "Date of Account Information": currentDate, //chech this
         "Date of First Delinquency": "",
         "Date Closed": "",
-        "Date of Last Payment": paymentDate,
+        "Date of Last Payment": "",
         "Interest Type Indicator": "",
         Surname: rest.last_name,
         "First Name": rest.first_name,
@@ -148,7 +149,7 @@ export default function RentPaymentForm() {
         "Telephone Number": data.phoneNumber,
         "ECOA Code": "1",
         "Consumer Information Indicator": "",
-        "Country Code": countryCode === "CA" ? "CN" : "US",
+        "Country Code": countryCode,
         "First Line of Address": first_address,
         "Second Line of Address": second_address,
         City: city,
@@ -157,7 +158,7 @@ export default function RentPaymentForm() {
         "Address Indicator": "",
         "Residence Code": "",
       };
-      const response = await fetch("/api/sub mit-form", {
+      const response = await fetch("/api/submit-form", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
