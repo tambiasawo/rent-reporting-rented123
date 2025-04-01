@@ -111,9 +111,7 @@ export default function RentPaymentForm() {
         postalZipCode = data.newAddress.postalZipCode;
         countryCode = data.newAddress.countryCode;
       }
-      const paymentDate = format(data.paymentDate, "MMddyyyy");
       const currentDate = format(new Date(), "MMddyyyy");
-      console.log({ countryCode });
 
       const metro2Data = {
         //...data,
