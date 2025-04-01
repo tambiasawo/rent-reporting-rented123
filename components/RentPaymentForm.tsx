@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, InfoIcon, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formSchema, type FormValues } from "@/lib/validations/form";
 import { toast } from "sonner";
@@ -40,6 +40,7 @@ import Link from "next/link";
 export default function RentPaymentForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubscriptionActive, setIsSubscriptionActive] = useState(false);
+  const [isCheckingSubscription, setIsCheckingSubscription] = useState(true);
 
   const {
     userRentInfo: { mepr_monthly_rent, id, ...rest },
@@ -63,6 +64,7 @@ export default function RentPaymentForm() {
   });
 
   async function checkUserSubscription(id: number) {
+    setIsCheckingSubscription(true);
     if (id) {
       try {
         const response = await fetch(`/api/check-subscription/?user_id=${id}`);
@@ -70,6 +72,8 @@ export default function RentPaymentForm() {
         if (data.success) setIsSubscriptionActive(true);
       } catch (e) {
         console.log("an error occurred");
+      } finally {
+        setIsCheckingSubscription(false);
       }
     }
   }
@@ -133,7 +137,7 @@ export default function RentPaymentForm() {
         "Date of Account Information": currentDate, //chech this
         "Date of First Delinquency": "",
         "Date Closed": "",
-        "Date of Last Payment": "shoudld be the 5th of last month",
+        "Date of Last Payment": paymentDate,
         "Interest Type Indicator": "",
         Surname: rest.last_name,
         "First Name": rest.first_name,
@@ -175,7 +179,16 @@ export default function RentPaymentForm() {
     }
   }
 
-  /*  if (!isSubscriptionActive) {
+  if (isCheckingSubscription) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-2">Verifying subscription...</span>
+      </div>
+    );
+  }
+
+  if (!isSubscriptionActive) {
     return (
       <div className="text-center p-8">
         <h2 className="text-xl font-semibold text-red-600 mb-2">
@@ -192,7 +205,7 @@ export default function RentPaymentForm() {
         </Button>
       </div>
     );
-  } */
+  }
 
   return (
     <Form {...form}>
@@ -492,6 +505,23 @@ export default function RentPaymentForm() {
                   </FormItem>
                 )}
               />
+            </div>
+            <div className="grid place-items-center">
+              <FormDescription className="flex justify-center gap-2 items-center">
+                <InfoIcon fontSize={"4px"} />{" "}
+                <span>
+                  {" "}
+                  Please update your address on your{" "}
+                  <Link
+                    className="underline"
+                    href="https://rented123.com/account/?action=home"
+                    target="_blank"
+                  >
+                    profile
+                  </Link>{" "}
+                  for future reporting
+                </span>
+              </FormDescription>
             </div>
           </div>
         )}
