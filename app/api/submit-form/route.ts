@@ -13,7 +13,6 @@ export async function POST(request: Request) {
       }
     );
     const responseData = await response.json();
-    console.log({ responseData, response });
     if (response.ok)
       return NextResponse.json({
         success: response.ok,
