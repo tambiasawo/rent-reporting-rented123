@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CalendarIcon, InfoIcon, Loader2 } from "lucide-react";
+import { CalendarIcon, Info, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formSchema, type FormValues } from "@/lib/validations/form";
 import { toast } from "sonner";
@@ -296,11 +296,10 @@ export default function RentPaymentForm() {
               <FormControl>
                 <Input
                   type="number"
-                  min="0"
-                  step="0.01"
+                  step="5"
                   placeholder="Enter rent amount"
                   {...field}
-                  value={field.value || customerRentData.rent || 0}
+                  value={field.value || customerRentData.rent || ""}
                   onChange={(e) => {
                     const value =
                       e.target.value &&
@@ -507,9 +506,8 @@ export default function RentPaymentForm() {
             </div>
             <div className="grid place-items-center">
               <FormDescription className="flex justify-center gap-2 items-center">
-                <InfoIcon fontSize={"4px"} />{" "}
+                <Info fontSize={8} />
                 <span>
-                  {" "}
                   Please update your address on your{" "}
                   <Link
                     className="underline"
