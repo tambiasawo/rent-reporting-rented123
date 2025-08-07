@@ -4,12 +4,7 @@ export async function GET(req: Request) {
   // 1) Parse JSON from the incoming request
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get("user_id"); // Get the token from the query parameters
-  console.log(
-    "url",
-    process.env.NEXT_PUBLIC_WORDPRESS_BASE_API,
-    process.env.NEXT_PUBLIC_CF_ACCESS_CLIENT_ID,
-    process.env.NEXT_PUBLIC_CF_ACCESS_CLIENT_SECRET
-  );
+
   try {
     // 2) Fetch your WordPress endpoint
     const response = await fetch(

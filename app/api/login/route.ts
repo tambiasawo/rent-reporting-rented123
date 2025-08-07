@@ -4,10 +4,6 @@ export async function POST(req: Request) {
   // 1) Parse JSON from the incoming request
   const formData = await req.json();
   try {
-    console.log(
-      process.env.NEXT_PUBLIC_WORDPRESS_BASE_API,
-      process.env.NEXT_PUBLIC_SECRET_HEADER
-    );
     // 2) Fetch your WordPress endpoint
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_WORDPRESS_BASE_API}/authenticate/v1/check-user`,
