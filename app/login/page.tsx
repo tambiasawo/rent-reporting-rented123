@@ -56,7 +56,7 @@ export default function Login() {
         />
       </div>
       <div className="md:max-w-5xl mx-auto flex h-[400px] gap-7 flex-col md:flex-row items-center rounded-md mt-5 pl-5 md:pl-0 pr-5 md:pr-0">
-        <div className="w-full">
+        <div className="w-full md:w-[80%] mx-auto">
           <LoginForm
             onSubmit={submitHandler}
             isLoading={isLoading}

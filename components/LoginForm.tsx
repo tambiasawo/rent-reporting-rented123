@@ -39,7 +39,7 @@ export default function RentPaymentForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full">
+      <form onSubmit={form.handleSubmit(onSubmit)} className=" space-y-6">
         <div className="mb-3">
           <h1 className="text-center text-2xl md:text-3xl font-semibold text-gray-900 pb-1 md:pb-2">
             Login
