@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
 import ContextWrapper from "@/lib/context";
-import { Toaster } from 'sonner';
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,13 +19,13 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const cookieStore = await cookies();
-  const loggedInCookie = cookieStore.get("myapp-token");
+  const loggedInCookie = Boolean(cookieStore.get("myapp-token"));
 
   return (
     <html lang="en">
       <body className={inter.className}>
         <ContextWrapper>
-          <Header isSignedIn={Boolean(loggedInCookie)} />
+          {loggedInCookie && <Header isSignedIn={loggedInCookie} />}
           {children}
         </ContextWrapper>
         <Toaster richColors position="top-center" />

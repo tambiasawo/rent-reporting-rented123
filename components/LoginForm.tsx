@@ -120,7 +120,7 @@ export default function RentPaymentForm({
           </Link>
         </p>
         <p className="underline">
-          <Link href={"https://rented123.com/sign-up/silver"} target="_blank">
+          <Link href={"https://rented123.com/silver"} target="_blank">
             Sign Up
           </Link>
         </p>

@@ -55,9 +55,8 @@ export default function Login() {
           height={"80"}
         />
       </div>
-      <div className="md:max-w-5xl mx-auto flex h-[400px] gap-7 flex-col md:flex-row items-center md:border rounded-md mt-5 pl-5 md:pl-0 pr-5 md:pr-0">
-        <div className="w-[35%] hidden md:block h-full signIn-left rounded-tl-md rounded-bl-md" />
-        <div className="md:w-[60%] w-full">
+      <div className="md:max-w-5xl mx-auto flex h-[400px] gap-7 flex-col md:flex-row items-center rounded-md mt-5 pl-5 md:pl-0 pr-5 md:pr-0">
+        <div className="w-full">
           <LoginForm
             onSubmit={submitHandler}
             isLoading={isLoading}

@@ -8,7 +8,15 @@ export async function GET(req: Request) {
   try {
     // 2) Fetch your WordPress endpoint
     const response = await fetch(
-      `https://rented123.com/wp-json/authenticate/v1/check-user-subscription/?user_id=${userId}`
+      `${process.env.NEXT_PUBLIC_WORDPRESS_BASE_API}/authenticate/v1/check-user-subscription/?user_id=${userId}`,
+      {
+        headers: {
+          "CF-Access-Client-Id": process.env
+            .NEXT_PUBLIC_CF_ACCESS_CLIENT_ID as string,
+          "CF-Access-Client-Secret": process.env
+            .NEXT_PUBLIC_CF_ACCESS_CLIENT_SECRET as string,
+        },
+      }
     );
 
     // 3) Handle non-OK response

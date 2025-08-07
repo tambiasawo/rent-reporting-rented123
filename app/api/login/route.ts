@@ -4,16 +4,24 @@ export async function POST(req: Request) {
   // 1) Parse JSON from the incoming request
   const formData = await req.json();
   try {
+    console.log(
+      process.env.NEXT_PUBLIC_WORDPRESS_BASE_API,
+      process.env.NEXT_PUBLIC_SECRET_HEADER
+    );
     // 2) Fetch your WordPress endpoint
     const response = await fetch(
-      `https://rented123.com/wp-json/authenticate/v1/check-user`,
+      `${process.env.NEXT_PUBLIC_WORDPRESS_BASE_API}/authenticate/v1/check-user`,
       {
         method: "POST",
         headers: {
           // Make sure WP sees it as JSON
           Accept: "application/json",
           "Content-Type": "application/json",
-          "X-Requested-By": "rent_report-rented123_next_iokre39k", // process.env.SECRET_HEADER as string,
+          "X-Requested-By": process.env.NEXT_PUBLIC_SECRET_HEADER as string, // process.env.SECRET_HEADER as string,
+          "CF-Access-Client-Id": process.env
+            .NEXT_PUBLIC_CF_ACCESS_CLIENT_ID as string,
+          "CF-Access-Client-Secret": process.env
+            .NEXT_PUBLIC_CF_ACCESS_CLIENT_SECRET as string,
         },
         // Must stringify the JSON when sending in fetch
         body: JSON.stringify(formData),
